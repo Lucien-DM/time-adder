@@ -1,8 +1,8 @@
-#Time Adder - Created by Lucien Di Mattia
+# Time Adder - Created by Lucien Di Mattia
 
 This program does not require any dependancies and is entirly written in base python.
 
-##Version Roadmap
+## Version Roadmap
 1.0 - First Release
 1.1 - Added Hour handling and mode switching
 1.2 - Clean up version 1.1, test, and pull to main branch.
