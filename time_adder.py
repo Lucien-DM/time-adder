@@ -1,94 +1,236 @@
 #!/usr/bin/env python3
-#Time Adder Version 1.1 - Credit Lucien Di Mattia 2026
+#Time Adder Version 1.1.1 - Credit Lucien Di Mattia 2026
+import sys
+import time
+VERSION = "V1.1.1"
+
+# Debug Toggle
+
+if len(sys.argv) >= 2:
+    if sys.argv[1] == "--debug":  
+        DEBUG = True
+    else:
+        DEBUG = False
+else: 
+    DEBUG = False 
+
+# Logging
+class Logger:
+    def info(self, message):
+        print(f"{time.time()} - INFO - {message}")
+    def warn(self, message):
+        print(f"{time.time()} - WARN - {message}")
+    def error(self, message):
+        print(f"{time.time()} - ERROR - {message}")
+
+class DummyLogger: #stops the program from erroring due to an undefined log
+    def info(self, message):
+        pass
+    def warn(self, message):
+        pass
+    def error(self, message):
+        pass
+
+if DEBUG:
+    log = Logger()
+else:
+    log = DummyLogger()
+
+#Init Lists
 list_seconds = []
 list_minutes = []
 list_hours = []
-while True: ## This assigns the mode flag - Will be redesigned in a future version
+
+#Some Debug info
+log.info(f"Time adder {VERSION}")
+log.info("Program started execution")
+log.warn("Debugging is Enabled!")
+log.warn("Logging is Enabled!")
+
+# Mode assignment
+
+while True: 
     print("Valid modes are hm, ms, hms. hm for adding hours and minutes, ms for minutes and seconds, and hms for hours, minutes, and seconds.")
     mode = input("Mode $ ")
     if mode == "ms" or mode == "hm" or mode == "hms":
         break
     else:
         print("Invalid Mode!")
-def minutes_seconds():
-    while True:
-        str_minutes = input("minutes | input finish to end $ ") 
-        if str_minutes == "finish":
-            break
-        str_seconds = input("seconds $ ")
-        try:
-            int(str_minutes)
-            int(str_seconds)
-        except ValueError:
-            print("Input must be an interger! Try again.")
-        else:
-            if int(str_minutes) >= 0 and int(str_seconds) >= 0:
-                list_seconds.append(int(str_seconds))
-                list_minutes.append(int(str_minutes))
-            else:
-                print("Input cannot be negitive! Try again.")
-    list_minutes.append(sum(list_seconds) // 60)
-    int_seconds = sum(list_seconds) % 60
-    int_minutes = sum(list_minutes)
-    print("TOTAL SUM (min:sec)")
-    print(f"{int_minutes}:{int_seconds}")
 
-def hours_minutes():
-    while True:
-        str_hours = input("hours | input finish to end $ ")
-        if str_hours == "finish":
-            break
-        str_minutes = input("minutes $ ")
-        try:
-            int(str_hours)
-            int(str_minutes) 
-        except ValueError:
-            print("Input must be an interger! Try again.")
-        else:
-            if int(str_hours) >= 0 and int(str_minutes) >= 0:
-                list_minutes.append(int(str_minutes))
-                list_hours.append(int(str_hours))
-            else:
-                print("Input cannot be negitive! Try again.")
-    list_hours.append(sum(list_minutes) // 60)
-    int_minutes = sum(list_minutes) % 60
-    int_hours = sum(list_hours)
-    print("TOTAL SUM (hour:minutes)")
-    print(f"{int_hours}:{int_minutes}")
+# Validation
 
-def hours_minutes_seconds():
-    while True:
-        str_hours = input("hours | input finish to end $ ")
-        if str_hours == "finish":
-            break
-        str_minutes = input("minutes $ ")
-        str_seconds = input("seconds $ ")
-        try:
-            int(str_hours)
-            int(str_minutes)
-            int(str_seconds)
-        except ValueError:
-            print("Input must be an interger! Try again.")
+def validate_positive_int(x):
+    #Outputs:
+    #0 if OK
+    #1 if non int
+    #2 if negitive
+    try:
+        int(x)
+    except ValueError:
+        log.warn(f"Value {x} is non integer! Should be interger.")
+        return 1 #Non Int
+    else: 
+        if x >= 0:
+            log.info(f"Positive Interger {x} is OK")
+            return 0 #OK
         else:
-            if int(str_hours) >= 0 and int(str_minutes) >= 0 and int(str_seconds) >= 0:
-                list_minutes.append(int(str_minutes))
-                list_hours.append(int(str_hours))
-                list_seconds.append(int(str_seconds))
+            log.warn(f"Value {x} is negitive! Should be postive.")
+            return 2 #Not Positive
+
+# Inputs
+
+def input_hours():
+     input_hour = input("Input Hours | Input 'finish' to end")
+     if input_hour == "finish":
+         return "finish"
+     else:
+        if validate_positive_int(input_hour) == 0:
+            return input_hour
+        elif validate_positive_int(input_hour) == 1:
+            return -1 #Non Int Error
+        elif validate_positive_int(input_hour) == 2:
+            return -2
+        else:
+            log.error("Unexpected value returned from function 'validate_positive_int' - line 81")
+            sys.exit
+
+def input_minutes():
+     input_minute = input("Input Minutes | Input 'finish' to end")
+     if input_hour == "finish":
+         return "finish"
+     else:
+        if validate_positive_int(input_minute) == 0:
+            return input_minute
+        elif validate_positive_int(input_minute) == 1:
+            return -1 #Non Int Error
+        elif validate_positive_int(input_minute) == 2:
+            return -2
+        else:
+            log.error("Unexpected value returned from function 'validate_positive_int' - line 81")
+            sys.exit
+
+def input_seconds():
+     input_hour = input("Input Seconds | Input 'finish' to end")
+     if input_hour == "finish":
+         return "finish"
+     else:
+        if validate_positive_int(input_second) == 0:
+            return input_hour
+        elif validate_positive_int(input_second) == 1:
+            return -1 #Non Int Error
+        elif validate_positive_int(input_second) == 2:
+            return -2
+        else:
+            log.error("Unexpected value returned from function 'validate_positive_int' - line 81")
+            sys.exit()
+
+#Prosessing and output
+
+def minutes_and_seconds(seconds_in_list, minute_in_list):
+    seconds_out = sum(seconds_in_list) % 60
+    minutes_in_list.append(sum(seconds_in_list) // 60)
+    minutes_out = sum(minutes_in_list)
+    print("TOTAL OUT! (minutes:seconds)")
+    print(f"{minutes_out}:{seconds_out}")
+    log.info("Done!")
+    sys.exit()
+
+def hours_and_minutes(minutes_in_list, hours_in_list):
+    minutes_out = sum(minutes_in_list) % 60
+    hours_in_list.append(sum(minutes_in_list) // 60)
+    hours_out = sum(hours_in_list)
+    print("TOTAL OUT! (hours:minutes)")
+    print(f"{hours_out}:{minutes_out}")
+    log.info("Done!")
+    sys.exit()
+
+def hours_minutes_and_seconds(hours_in_list, minutes_in_list, seconds_in_list):
+    seconds_out = sum(seconds_in_list) % 60
+    minutes_in_list.append(sum(seconds_in_list) // 60)
+    minutes_out = sum(minutes_in_list) % 60
+    hours_in_list.append(sum(minutes_in_list) // 60)
+    hours_out = sum(hours_in_list)
+    print("TOTAL OUT! (hours:minutes:seconds)")
+    print(f"{hours_out}:{minutes_out}:{seconds_out}")
+    log.info("Done!")
+    sys.exit()
+
+# MAIN
+
+if mode == "hms":
+    while True:
+        hour = input_hours()
+        if hour == "finish":
+            break
+        elif hour == -1: #Non Int Error
+            print("Input must be an interger!")
+        elif hour == -2: #Negitive Value Error
+            print("Input must be Positive!")
+        else:
+
+            minute = input_minutes()
+            if minute == "finish":
+                break
+            elif hour == -1: #Non Int Error
+                print("Input must be an interger!")
+            elif minute == -2: #Negitive Value Error
+                print("Input must be Positive!")
             else:
-                print("Input cannot be negitive! Try again.")
-    list_minutes.append(sum(list_seconds) // 60)
-    list_hours.append(sum(list_minutes) // 60)
-    int_seconds = sum(list_seconds) % 60
-    int_minutes = sum(list_minutes) % 60
-    int_hours = sum(list_hours)
-    print("TOTAL SUM (hour:minutes:seconds)")
-    print(f"{int_hours}:{int_minutes}:{int_seconds}")
-#This is DEFINITLY not written the best it could be but fuck it we ball.
-#MUST FIX BY V1.2
+
+                second = input_seconds()
+                if second == "finish":
+                    break
+                elif hour == -1: #Non Int Error
+                    print("Input must be an interger!")
+                elif minute == -2: #Negitive Value Error
+                    print("Input must be Positive!")
+                else:
+
+                    hours_list.append(hour)
+                    minutes_list.append(minute)
+                    seconds_list.append(second)
+
+if mode == "hm":
+    while True:
+        hour = input_hours()
+        if hour == "finish":
+            break
+        elif hour == -1: #Non Int Error
+            print("Input must be an interger!")
+        elif hour == -2: #Negitive Value Error
+            print("Input must be Positive!")
+        else:
+
+            minute = input_minutes()
+            if minute == "finish":
+                break
+            elif hour == -1: #Non Int Error
+                print("Input must be an interger!")
+            elif minute == -2: #Negitive Value Error
+                print("Input must be Positive!")
+            else:
+
+                hours_list.append(hour)
+                minutes_list.append(minute)
+
 if mode == "ms":
-    minutes_seconds()
-elif mode == "hm":
-    hours_minutes()
-elif mode == "hms":
-    hours_minutes_seconds()
-
+    while True:
+            minute = input_minutes()
+            if minute == "finish":
+                break
+            elif hour == -1: #Non Int Error
+                print("Input must be an interger!")
+            elif minute == -2: #Negitive Value Error
+                print("Input must be Positive!")
+            else:
+                second = input_seconds()
+                if second == "finish":
+                    break
+                elif hour == -1: #Non Int Error
+                    print("Input must be an interger!")
+                elif minute == -2: #Negitive Value Error
+                    print("Input must be Positive!")
+                else:
+                   
+                    minutes_list.append(minute)
+                    seconds_list.append(second)
