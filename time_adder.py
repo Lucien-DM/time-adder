@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-#Time Adder Version 1.1.1 - Credit Lucien Di Mattia 2026
+#Time Adder Version 1.1.2 - UNSTABLE BUILD - Credit Lucien Di Mattia 2026
 import sys
 import time
-VERSION = "V1.1.1"
+VERSION = "V1.1.2"
+UNSTABLE = True
 
 # Debug Toggle
 
@@ -36,10 +37,16 @@ if DEBUG:
 else:
     log = DummyLogger()
 
+if UNSTABLE:
+    print("THIS IS AN UNSTABLE BUILD")
+    log.warn(f"VERSION {VERSION} IS AN UNSTABLE BUILD")
+
+
+
 #Init Lists
-list_seconds = []
-list_minutes = []
-list_hours = []
+seconds_list = []
+minutes_list = []
+hours_list = []
 
 #Some Debug info
 log.info(f"Time adder {VERSION}")
@@ -53,8 +60,10 @@ while True:
     print("Valid modes are hm, ms, hms. hm for adding hours and minutes, ms for minutes and seconds, and hms for hours, minutes, and seconds.")
     mode = input("Mode $ ")
     if mode == "ms" or mode == "hm" or mode == "hms":
+        log.info(f"Mode selected as '{mode}'")
         break
     else:
+        log.warn(f"Mode '{mode}' is Invalid!")
         print("Invalid Mode!")
 
 # Validation
@@ -67,19 +76,20 @@ def validate_positive_int(x):
     try:
         int(x)
     except ValueError:
-        log.warn(f"Value {x} is non integer! Should be interger.")
+        log.warn(f"Value '{x}' is non integer! Should be interger.")
         return 1 #Non Int
     else: 
-        if x >= 0:
-            log.info(f"Positive Interger {x} is OK")
+        if int(x) >= 0:
+            log.info(f"Positive Interger '{x}' is OK")
             return 0 #OK
         else:
-            log.warn(f"Value {x} is negitive! Should be postive.")
+            log.warn(f"Value '{x}' is negitive! Should be postive.")
             return 2 #Not Positive
 
 # Inputs
 
 def input_hours():
+     log.info("Inputting Hours")
      input_hour = input("Input Hours | Input 'finish' to end")
      if input_hour == "finish":
          return "finish"
@@ -95,8 +105,9 @@ def input_hours():
             sys.exit
 
 def input_minutes():
+     log.info("Inputting Minutes")
      input_minute = input("Input Minutes | Input 'finish' to end")
-     if input_hour == "finish":
+     if input_hours == "finish":
          return "finish"
      else:
         if validate_positive_int(input_minute) == 0:
@@ -110,6 +121,7 @@ def input_minutes():
             sys.exit
 
 def input_seconds():
+     log.info("Inputting Seconds")
      input_hour = input("Input Seconds | Input 'finish' to end")
      if input_hour == "finish":
          return "finish"
@@ -186,9 +198,10 @@ if mode == "hms":
                     print("Input must be Positive!")
                 else:
 
-                    hours_list.append(hour)
-                    minutes_list.append(minute)
-                    seconds_list.append(second)
+                    hours_list.append(int(hour))
+                    minutes_list.append(int(minute))
+                    seconds_list.append(int(second))
+    hours_minutes_and_seconds(hours_list, minutes_list, seconds_list)
 
 if mode == "hm":
     while True:
@@ -210,8 +223,9 @@ if mode == "hm":
                 print("Input must be Positive!")
             else:
 
-                hours_list.append(hour)
-                minutes_list.append(minute)
+                hours_list.append(int(hour))
+                minutes_list.append(int(minute))
+    hours_and_minutes(hours_list, minutes_list)
 
 if mode == "ms":
     while True:
@@ -232,5 +246,6 @@ if mode == "ms":
                     print("Input must be Positive!")
                 else:
                    
-                    minutes_list.append(minute)
-                    seconds_list.append(second)
+                    minutes_list.append(int(minute))
+                    seconds_list.append(int(second))
+    minutes_and_seconds(minutes_list, seconds_list)
